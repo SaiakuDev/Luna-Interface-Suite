@@ -1869,9 +1869,11 @@ local function Hide(Window, bind, notif)
 	SizeBleh = Window.Size
 	bind = string.split(tostring(bind), "Enum.KeyCode.")
 	bind = bind[2]
-	if notif then
-		Luna:Notification({Title = "Interface Hidden", Content = "The interface has been hidden, you may reopen the interface by Pressing the UI Bind In Settings ("..tostring(bind)..")", Icon = "visibility_off"})
-	end
+    if UserInputService.KeyboardEnabled == true then
+        if notif then
+			Luna:Notification({Title = "Interface Hidden", Content = "The interface has been hidden, you may reopen the interface by Pressing the UI Bind In Settings ("..tostring(bind)..")", Icon = "visibility_off"})
+		end
+    end
 	tween(Window, {BackgroundTransparency = 1})
 	tween(Window.Elements, {BackgroundTransparency = 1})
 	tween(Window.Line, {BackgroundTransparency = 1})
@@ -1951,6 +1953,9 @@ local Navigation = Main.Navigation
 local Tabs = Navigation.Tabs
 local Notifications = LunaUI.Notifications
 local KeySystem : Frame = Main.KeySystem
+
+Elements.Template.Input.InputFrame.ZIndex = 151
+Elements.Template.InputDesc.InputFrame.ZIndex = 151
 
 -- local function LoadConfiguration(Configuration, autoload)
 -- 	local Data = HttpService:JSONDecode(Configuration)
@@ -2120,6 +2125,13 @@ function Luna:Notification(data) -- action e.g open messages
 		newNotification.LayoutOrder = #Notifications:GetChildren()
 		newNotification.Visible = false
 		BlurModule(newNotification)
+		
+		newNotification.Active = false
+		for i,v in newNotification:GetDescendants() do
+			if v:IsA("GuiBase") then
+				v.Active = false
+			end
+		end
 
 		-- Set Data
 		newNotification.Title.Text = data.Title
@@ -2579,7 +2591,7 @@ function Luna:CreateWindow(WindowSettings)
 				HomeTabPage.detailsholder.dashboard.Client.Subtitle.Text = "Your Executor Supports This Script."
 				break
 			else
-				HomeTabPage.detailsholder.dashboard.Client.Subtitle.Text = "Your Executor Isn't Officialy Supported By This Script."
+				HomeTabPage.detailsholder.dashboard.Client.Subtitle.Text = "Your Executor Isn't Officially Supported By This Script."
 				break
 			end
 		end
@@ -2604,7 +2616,13 @@ function Luna:CreateWindow(WindowSettings)
 				})
 			end
 		end)
-
+		
+		HomeTabPage.detailsholder.dashboard.Server.JobId.Title.Text = "Join Server"
+		HomeTabPage.detailsholder.dashboard.Server.JobId.Value.Text = "Tap to copy server join link"
+		HomeTabPage.detailsholder.dashboard.Server.JobId.Interact.MouseButton1Click:Connect(function()
+			setclipboard(`https://www.roblox.com/games/start?placeId={tostring(game.PlaceId)}&launchData={tostring(game.GameId)}/{game.JobId}`)
+		end)
+		
 		local friendsCooldown = 0
 		local function getPing() return math.clamp(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue(), 10, 700) end
 
@@ -3670,7 +3688,7 @@ function Luna:CreateWindow(WindowSettings)
 
 				Input.InputFrame.InputBox.PlaceholderText = InputSettings.PlaceholderText
 				Input.InputFrame.Size = UDim2.new(0, Input.InputFrame.InputBox.TextBounds.X + 52, 0, 30)
-
+				
 				Input.InputFrame.InputBox.FocusLost:Connect(function(bleh)
 
 					if InputSettings.Enter then
@@ -3774,8 +3792,7 @@ function Luna:CreateWindow(WindowSettings)
 				if Flag then
 					Luna.Options[Flag] = InputV
 				end
-
-
+				
 				return InputV
 
 			end
@@ -5871,7 +5888,7 @@ function Luna:CreateWindow(WindowSettings)
 					end
 				end
 				tween(Dropdown.List[bleh], {TextColor3 = Color3.fromRGB(240,240,240), BackgroundTransparency = 0.95})
-
+				
 				if DropdownSettings.MultipleOptions then
 					if DropdownSettings.CurrentOption and type(DropdownSettings.CurrentOption) == "table" then
 						if #DropdownSettings.CurrentOption == 1 then
