@@ -47,7 +47,7 @@ if not game:IsLoaded() then
 	game.Loaded:Wait()
 end --// if u start when ur in the loading screen you error, this is bandaid fix i guess?
 
-local Release = "Prerelease Beta 6.1"
+local Release = "Prerelease Beta 6.2"
 
 local Luna = { 
 	Folder = "Luna", 
@@ -55,17 +55,21 @@ local Luna = {
 	ThemeGradient = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(117, 164, 206)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(123, 201, 201)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(224, 138, 175))} 
 }
 
-local UserInputService = game:GetService("UserInputService")
-local Localization = game:GetService("LocalizationService")
-local TweenService = game:GetService("TweenService")
-local CoreGui = cloneref(game:GetService("CoreGui"))
-local HttpService = game:GetService("HttpService")
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
+local function getService(name)
+	local service = game:GetService(name)
+	return if cloneref then cloneref(service) else service
+end --// Safety! Chat!
+
+local UserInputService = getService("UserInputService")
+local Localization = getService("LocalizationService")
+local TweenService = getService("TweenService")
+local CoreGui = cloneref(getService("CoreGui"))
+local HttpService = getService("HttpService")
+local RunService = getService("RunService")
+local Players = getService("Players")
 
 local Player = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
-
 
 local isStudio = RunService:IsStudio()
 local website = "github.com/SaiakuDev"
@@ -1658,13 +1662,15 @@ local function BlurModule(Frame)
 	local camera = workspace.CurrentCamera
 	local MTREL = "Glass"
 	local binds = {}
-	local root = Instance.new('Folder', camera) --//TODO: EASY DETECT!!! GET RID!!!
+	local root = Instance.new('Folder') --//TODO: EASY DETECT!!! GET RID!!!
+	root.Parent = camera
 	root.Name = 'LunaBlur'
 
 	local gTokenMH = 99999999
 	local gToken = math.random(1, gTokenMH)
 
-	local DepthOfField = Instance.new('DepthOfFieldEffect', game:GetService('Lighting'))
+	local DepthOfField = Instance.new('DepthOfFieldEffect')
+	DepthOfField.Parent = getService('Lighting')
 	DepthOfField.FarIntensity = 0
 	DepthOfField.FocusDistance = 51.6
 	DepthOfField.InFocusRadius = 50
@@ -1754,7 +1760,8 @@ local function BlurModule(Frame)
 				p0.CastShadow = false
 				p0.Material = MTREL
 				p0.Size = Vector3.new(sz, sz, sz)
-				local mesh = Instance.new('SpecialMesh', p0)
+				local mesh = Instance.new('SpecialMesh')
+				mesh.Parent = p0
 				mesh.MeshType = 2
 				mesh.Name = 'WedgeMesh'
 			end
@@ -1782,7 +1789,8 @@ local function BlurModule(Frame)
 
 	local uid = GenUid()
 	local parts = {}
-	local f = Instance.new('Folder', root)
+	local f = Instance.new('Folder')
+	f.Parent = root
 	f.Name = frame.Name
 
 	local parents = {}
@@ -1864,7 +1872,7 @@ local function unpackt(array : table)
 end
 
 -- Interface Management
-local LunaUI = isStudio and script.Parent:WaitForChild("Luna UI") or game:GetObjects("rbxassetid://86467455075715")[1]
+local LunaUI = isStudio and script.Parent:WaitForChild("Luna UI") or game:GetObjects("rbxassetid://137610873054588")[1]
 
 local SizeBleh = nil
 
@@ -2320,9 +2328,9 @@ function Luna:CreateWindow(WindowSettings)
 	LoadingFrame.Frame.Frame.Subtitle.Text = WindowSettings.LoadingSubtitle
 	LoadingFrame.Version.Text = LoadingFrame.Frame.Frame.Title.Text == "Luna Interface Suite" and Release or "Luna UI"
 
-	Navigation.Player.icon.ImageLabel.Image = Players:GetUserThumbnailAsync(Players.LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
-	Navigation.Player.Namez.Text = Players.LocalPlayer.DisplayName
-	Navigation.Player.TextLabel.Text = Players.LocalPlayer.Name
+	Navigation.Player.PlayerIcon.Icon.Image = Players:GetUserThumbnailAsync(Players.LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
+	Navigation.Player.DisplayName.Text = Players.LocalPlayer.DisplayName
+	Navigation.Player.Username.Text = Players.LocalPlayer.Name
 
 	for i,v in pairs(Main.Controls:GetChildren()) do
 		v.Visible = false
@@ -2519,8 +2527,8 @@ function Luna:CreateWindow(WindowSettings)
 	TweenService:Create(Main.Title.Title, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 	TweenService:Create(Main.Title.subtitle, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {TextTransparency = 0}):Play()
 	TweenService:Create(Main.Logo, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
-	TweenService:Create(Navigation.Player.icon.ImageLabel, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
-	TweenService:Create(Navigation.Player.icon.UIStroke, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Transparency = 0}):Play()
+	TweenService:Create(Navigation.Player.PlayerIcon.Icon, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {ImageTransparency = 0}):Play()
+	TweenService:Create(Navigation.Player.PlayerIcon.UIStroke, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {Transparency = 0}):Play()
 	TweenService:Create(Main.Line, TweenInfo.new(0.35, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out), {BackgroundTransparency = 0}):Play()
 	task.wait(0.4)
 	LoadingFrame.Visible = false
@@ -2583,26 +2591,26 @@ function Luna:CreateWindow(WindowSettings)
 		end)
 
 
-		HomeTabPage.icon.ImageLabel.Image = Players:GetUserThumbnailAsync(Players.LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+		HomeTabPage.PlayerIcon.Icon.Image = Players:GetUserThumbnailAsync(Players.LocalPlayer.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
 		
-		HomeTabPage.player.Text.Text = "Hello, " .. Players.LocalPlayer.DisplayName
-		HomeTabPage.player.user.Text = Players.LocalPlayer.Name .. " - ".. WindowSettings.Name
+		HomeTabPage.Player.DisplayName.Text = "Hello, " .. Players.LocalPlayer.DisplayName
+		HomeTabPage.Player.Username.Text = Players.LocalPlayer.Name .. " - ".. WindowSettings.Name
 
-		HomeTabPage.detailsholder.dashboard.Client.Title.Text = (isStudio and "Debugging (Studio)" or identifyexecutor()) or "Your Executor Does Not Support identifyexecutor."
-		HomeTabPage.detailsholder.dashboard.Client.Subtitle.Text = "Your Executor Isn't Officially Supported By This Script."
+		HomeTabPage.Details.Dashboard.Client.Title.Text = (isStudio and "Debugging (Studio)" or identifyexecutor()) or "Your Executor Does Not Support identifyexecutor."
+		HomeTabPage.Details.Dashboard.Client.Subtitle.Text = "Your Executor Isn't Officially Supported By This Script."
 		
 		for i,v in pairs(HomeTabSettings.SupportedExecutors) do
-			if isStudio then HomeTabPage.detailsholder.dashboard.Client.Subtitle.Text = "Luna Interface Suite - Debugging Mode" break end
+			if isStudio then HomeTabPage.Details.Dashboard.Client.Subtitle.Text = "Luna Interface Suite - Debugging Mode" break end
 			
 			if v == identifyexecutor() then
-				HomeTabPage.detailsholder.dashboard.Client.Subtitle.Text = "Your Executor Supports This Script."
+				HomeTabPage.Details.Dashboard.Client.Subtitle.Text = "Your Executor Supports This Script."
 				break
 			end
 		end
 
 		-- Stolen From Sirius Stuff Begins Here
 
-		HomeTabPage.detailsholder.dashboard.Discord.Interact.MouseButton1Click:Connect(function()
+		HomeTabPage.Details.Dashboard.Discord.Interact.MouseButton1Click:Connect(function()
 			setclipboard(tostring("https://discord.gg/"..HomeTabSettings.DiscordInvite)) -- Hunter if you see this I added copy also was too lazy to send u msg
 			if request then
 				request({
@@ -2621,14 +2629,14 @@ function Luna:CreateWindow(WindowSettings)
 			end
 		end)
 		
-		HomeTabPage.detailsholder.dashboard.Server.JobId.Title.Text = "Join Server"
-		HomeTabPage.detailsholder.dashboard.Server.JobId.Value.Text = "Tap to copy server join link"
-		HomeTabPage.detailsholder.dashboard.Server.JobId.Interact.MouseButton1Click:Connect(function()
+		HomeTabPage.Details.Dashboard.Server.JobId.Title.Text = "Join Server"
+		HomeTabPage.Details.Dashboard.Server.JobId.Value.Text = "Tap to copy server join link"
+		HomeTabPage.Details.Dashboard.Server.JobId.Interact.MouseButton1Click:Connect(function()
 			setclipboard(`https://www.roblox.com/games/start?placeId={tostring(game.PlaceId)}&launchData={tostring(game.GameId)}/{game.JobId}`)
 		end)
 		
 		local friendsCooldown = 0
-		local function getPing() return math.clamp(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue(), 10, 700) end
+		local function getPing() return math.clamp(getService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue(), 10, 700) end
 
 		local function checkFriends()
 			if friendsCooldown == 0 then
@@ -2655,7 +2663,7 @@ function Luna:CreateWindow(WindowSettings)
 						list:AdvanceToNextPageAsync()
 					end
 				end
-				for i, v in pairs(Player:GetFriendsOnline()) do
+				for i, v in pairs(Player:GetFriendsOnlineAsync()) do
 					onlineFriends += 1
 				end
 
@@ -2665,10 +2673,10 @@ function Luna:CreateWindow(WindowSettings)
 					end
 				end
 
-				HomeTabPage.detailsholder.dashboard.Friends.All.Value.Text = tostring(friendsInTotal).." friends"
-				HomeTabPage.detailsholder.dashboard.Friends.Offline.Value.Text = tostring(friendsInTotal - onlineFriends).." friends"
-				HomeTabPage.detailsholder.dashboard.Friends.Online.Value.Text = tostring(onlineFriends).." friends"
-				HomeTabPage.detailsholder.dashboard.Friends.InGame.Value.Text = tostring(friendsInGame).." friends"
+				HomeTabPage.Details.Dashboard.Friends.All.Value.Text = tostring(friendsInTotal).." friends"
+				HomeTabPage.Details.Dashboard.Friends.Offline.Value.Text = tostring(friendsInTotal - onlineFriends).." friends"
+				HomeTabPage.Details.Dashboard.Friends.Online.Value.Text = tostring(onlineFriends).." friends"
+				HomeTabPage.Details.Dashboard.Friends.InGame.Value.Text = tostring(friendsInGame).." friends"
 
 			else
 				friendsCooldown -= 1
@@ -2688,21 +2696,23 @@ function Luna:CreateWindow(WindowSettings)
 		end
 
 		--// player thing
-		HomeTabPage.detailsholder.dashboard.Server.MaxPlayers.Value.Text = Players.MaxPlayers.." players can join this server"
+		HomeTabPage.Details.Dashboard.Server.MaxPlayers.Value.Text = Players.MaxPlayers.." players can join this server"
 
 		--// Region
-		HomeTabPage.detailsholder.dashboard.Server.Region.Value.Text = Localization:GetCountryRegionForPlayerAsync(Players.LocalPlayer)
+		HomeTabPage.Details.Dashboard.Server.Region.Value.Text = Localization:GetCountryRegionForPlayerAsync(Players.LocalPlayer)
 		--// quick 2 do
+		checkFriends() --// it doesnt do it dobule
+
 		task.defer(function()
 			while task.wait() do
 				-- Players
-				HomeTabPage.detailsholder.dashboard.Server.Players.Value.Text = #Players:GetPlayers().." playing"
+				HomeTabPage.Details.Dashboard.Server.Players.Value.Text = #Players:GetPlayers().." playing"
 
 				-- Ping
-				HomeTabPage.detailsholder.dashboard.Server.Latency.Value.Text = isStudio and tostring(math.round((Players.LocalPlayer:GetNetworkPing() * 2 ) / 0.01)) .."ms" or tostring(math.floor(getPing()) .."ms")
+				HomeTabPage.Details.Dashboard.Server.Latency.Value.Text = isStudio and tostring(math.round((Players.LocalPlayer:GetNetworkPing() * 2 ) / 0.01)) .."ms" or tostring(math.floor(getPing()) .."ms")
 
 				-- Time
-				HomeTabPage.detailsholder.dashboard.Server.Time.Value.Text = convertToHMS(time())
+				HomeTabPage.Details.Dashboard.Server.Time.Value.Text = convertToHMS(time())
 			end
 		end)
 
